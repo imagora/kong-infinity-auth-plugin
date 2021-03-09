@@ -31,15 +31,15 @@ function _M.execute(data, conf)
     return utils.invalid_token()
   end
 
-  local credential = utils.load_credential(kong.db.consumer_contexts, 
-                                           kong.db.consumer_contexts.select_by_app_id, 
+  local credential = utils.load_credential(kong.db.hmacauth_credentials, 
+                                           kong.db.hmacauth_credentials.select_by_username,
                                            token.app_id)
   if not credential then
     kong.log.warn("can not find consumer context. ", "appid : ", token.app_id)
     return utils.invalid_token()
   end
 
-  token.app_cert = credential.app_cert
+  token.app_cert = credential.secret
   local token_rebuild = token:build()
   if token_rebuild ~= data then
     return utils.invalid_token()
